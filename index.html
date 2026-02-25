@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Secure MQTT Chat</title>
+    <title>MQTT Chatroom</title>
+
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="style.css">
+
+    <!-- Scripts -->
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <script defer src="themes.js"></script>
     <script defer src="emoji.js"></script>
@@ -12,97 +16,85 @@
 </head>
 <body>
 
+<!-- Loading Screen -->
 <div id="loadingScreen">Loading…</div>
 
-<div id="login" class="panel fade" style="display:none;">
+<!-- Login Panel -->
+<div id="login" class="panel" style="display:none;">
     <h2>Enter Password</h2>
     <p class="hint">
-        Use your access password. Prefix with <b>*67</b> to hide your name, or use <b>*#0*#</b> for info only.
+        Use your access password.  
+        Prefix with <b>*67</b> to hide your name.  
+        Use <b>*#0*#</b> for the About menu.
     </p>
     <input id="pw" type="password" placeholder="Password">
     <button id="loginBtn">Enter</button>
 </div>
 
-<div id="aboutMenu" class="panel fade">
+<!-- About Menu -->
+<div id="aboutMenu" class="panel" style="display:none;">
     <h2>About This Site</h2>
     <p><b>Version:</b> 2.0.0</p>
-    <p><b>Creator:</b> Chris &amp; XGFZTeam</p>
+    <p><b>Creator:</b> Chris & XGFZTeam</p>
     <button onclick="location.reload()">Back</button>
 </div>
 
-<div id="chat" class="fade">
+<!-- Chat UI -->
+<div id="chat" style="display:none;">
     <div id="chatContainer">
-        <div id="sidebar">
-            <div id="sidebarTop">
-                <h3>Chat Info</h3>
-                <div id="userInfo">
-                    <div><b>You:</b> <span id="currentUserLabel"></span></div>
-                    <div class="small">
-                        Broker: flespi<br>
-                        Topic: <span id="currentRoomLabel">ttg/chat/main</span>
-                    </div>
-                </div>
 
-                <h3>Rooms</h3>
-                <div id="roomList"></div>
-                <button id="addRoomBtn" class="smallBtn">+ Room</button>
-            </div>
-
-            <div id="sidebarMiddle">
-                <h3>Online</h3>
-                <div id="userList"></div>
-            </div>
-
-            <div id="sidebarBottom">
-                <button id="themeToggle">Toggle Dark/Light</button>
-                <select id="themePreset"></select>
-                <select id="bgPreset"></select>
-                <button id="adminPanelBtn" class="smallBtn">Admin Panel</button>
-            </div>
-        </div>
-
-        <div id="mainChat">
-            <div id="chatHeader">
-                <div>
-                    <h2>MQTT Chatroom</h2>
-                    <div id="roomSubtitle" class="small">Secure Room</div>
-                </div>
-                <div id="headerRight" class="small">
-                    <span id="lastSeenLabel"></span>
+        <!-- Sidebar -->
+        <aside id="sidebar">
+            <h3>Chat Info</h3>
+            <div id="userInfo">
+                <div><b>You:</b> <span id="currentUserLabel"></span></div>
+                <div class="subinfo">
+                    Broker: flespi<br>
+                    Topic: ttg/chat/main
                 </div>
             </div>
+
+            <h3>Online</h3>
+            <div id="userList"></div>
+
+            <h3>Rooms</h3>
+            <div id="roomList"></div>
+
+            <button id="themeToggle">Toggle Theme</button>
+            <button id="adminBtn">Admin Panel</button>
+        </aside>
+
+        <!-- Main Chat -->
+        <main id="mainChat">
+            <header id="chatHeader">
+                <h2 id="roomTitle">MQTT Chatroom</h2>
+                <span class="subinfo">Secure Room</span>
+            </header>
 
             <div id="chatBox"></div>
             <div id="typingIndicator"></div>
 
             <div id="inputRow">
                 <button id="emojiBtn">😊</button>
-                <div id="emojiPicker" class="hidden"></div>
-
                 <input id="msg" placeholder="Type a message">
                 <button id="sendBtn">Send</button>
             </div>
-        </div>
+        </main>
     </div>
 </div>
 
-<div id="adminPanel" class="panel fade" style="display:none;">
-    <h2>Admin Panel</h2>
-    <p class="small">You can kick, mute, or broadcast announcements.</p>
+<!-- Emoji Picker -->
+<div id="emojiPicker" style="display:none;"></div>
 
-    <label class="small">Kick user</label>
-    <input id="kickUserInput" placeholder="Username">
-    <button id="kickUserBtn">Kick</button>
-
-    <label class="small">Mute user</label>
-    <input id="muteUserInput" placeholder="Username">
-    <button id="muteUserBtn">Mute</button>
-
-    <label class="small">Announcement</label>
-    <input id="announceInput" placeholder="Message to everyone">
-    <button id="announceBtn">Broadcast</button>
-
-    <button id="adminCloseBtn" style="margin-top:15px;">Close</button>
+<!-- Admin Panel -->
+<div id="adminPanel" style="display:none;">
+    <div class="adminContent">
+        <h2>Admin Panel</h2>
+        <button id="kickBtn">Kick User</button>
+        <button id="muteBtn">Mute User</button>
+        <button id="announceBtn">Send Announcement</button>
+        <button onclick="document.getElementById('adminPanel').style.display='none'">Close</button>
+    </div>
 </div>
 
 </body>
