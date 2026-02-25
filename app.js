@@ -22,7 +22,7 @@ const CONTROL_TOPIC = `${BASE}/control`;
 const ANNOUNCE_TOPIC = `${BASE}/announce`;
 
 /* Flespi token (replace with your real token) */
-const token = "YOUR_FLESPI_TOKEN_HERE";
+const token = "g977bmKI5b1CdmpybeBxi4QfXcrGVva0oUvZc4mb9lhxNkIL3L2pXhIfhI7NP2J0";
 
 /* Passwords */
 const passwords = {
