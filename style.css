@@ -53,17 +53,6 @@ h2, h3 {
 /* ===========================
    LOADING SCREEN
    =========================== */
-#loadingScreen {
-    position: fixed;
-    inset: 0;
-    background: var(--bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    font-weight: 600;
-    z-index: 10;
-}
 
 /* ===========================
    PANELS (LOGIN / ABOUT)
