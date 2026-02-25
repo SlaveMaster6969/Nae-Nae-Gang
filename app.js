@@ -24,7 +24,7 @@ const ANNOUNCE_TOPIC = `${BASE}/announce`;
 /* Flespi token (replace with your real token) */
 const token = "g977bmKI5b1CdmpybeBxi4QfXcrGVva0oUvZc4mb9lhxNkIL3L2pXhIfhI7NP2J0";
 
-/* Passwords */
+/* Passwords (Option A) */
 const passwords = {
     "LandonStone202": "landon",
     "A1746471BCBF": "Chris",
@@ -44,8 +44,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setupRoomList();
     setupFileUpload();
 });
-
-
 
 /* ============================================================
    LOGIN LOGIC
