@@ -55,8 +55,6 @@ function setupLogin() {
     document.getElementById("loginBtn").addEventListener("click", checkPassword);
 }
 
-
-
 function checkPassword() {
     let pw = document.getElementById("pw").value.trim();
 
