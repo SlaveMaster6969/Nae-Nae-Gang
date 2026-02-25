@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Secure MQTT Chat</title>
+
+    <style>
+        body {
+            background: #ffffff;
+            color: #222;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* Fade animations */
+        .fade {
+            animation: fadeIn 0.6s ease forwards;
+            opacity: 0;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Loading screen */
+        #loadingScreen {
+            position: fixed;
+            inset: 0;
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: bold;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Centered panels */
+        .panel {
+            width: 350px;
+            margin: 120px auto;
+            padding: 25px;
+            background: #f7f7f7;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0069d9;
+        }
+
+        #chat {
+            display: none;
+            padding: 20px;
+        }
+
+        #chatBox {
+            width: 100%;
+            height: 350px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        #msg {
+            width: calc(100% - 110px);
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+
+        #sendBtn {
+            width: 90px;
+            padding: 12px;
+            margin-left: 10px;
+            background: #28a745;
+        }
+        #sendBtn:hover {
+            background: #218838;
+        }
+
+        #aboutMenu {
+            display: none;
+        }
+    </style>
+
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+
+<!-- Loading Screen -->
+<div id="loadingScreen">Loading…</div>
+
+<!-- Login Panel -->
+<div id="login" class="panel fade" style="display:none;">
+    <h2>Enter Password</h2>
+    <input id="pw" type="password" placeholder="Password">
+    <button onclick="checkPassword()">Enter</button>
+</div>
+
+<!-- About Menu -->
+<div id="aboutMenu" class="panel fade">
+    <h2>About This Site</h2>
+    <p><b>Version:</b> 1.0.0</p>
+    <p><b>Creator:</b> Chris & XGFZTeam</p>
+    <button onclick="location.reload()">Back</button>
+</div>
+
+<!-- Chat UI -->
+<div id="chat" class="fade">
+    <h2>MQTT Chatroom</h2>
+
+    <div id="chatBox"></div>
+
+    <div style="display:flex; margin-top:10px;">
+        <input id="msg" placeholder="Type message">
+        <button id="sendBtn" onclick="sendMsg()">Send</button>
+    </div>
+</div>
+
+<script>
+    /* Replace with your real flespi token */
+    const token = "g977bmKI5b1CdmpybeBxi4QfXcrGVva0oUvZc4mb9lhxNkIL3L2pXhIfhI7NP2J0";
+
+    let client = null;
+    let username = "";
+    const CHAT_TOPIC = "ttg/chat/main";
+
+    const passwords = {
+        "LandonStone202": "landon",
+        "A1746471BCBF": "Chris",
+        "Randy": "Brandon"
+    };
+
+    /* Loading screen timeout */
+    setTimeout(() => {
+        document.getElementById("loadingScreen").style.display = "none";
+        document.getElementById("login").style.display = "block";
+    }, 900);
+
+    /* ENTER KEY SUPPORT */
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            if (document.getElementById("login").style.display !== "none") {
+                checkPassword();
+            } else {
+                sendMsg();
+            }
+        }
+    });
+
+    function checkPassword() {
+        let pw = document.getElementById("pw").value.trim();
+
+        if (pw === "*#0*#") {
+            document.getElementById("login").style.display = "none";
+            document.getElementById("aboutMenu").style.display = "block";
+            return;
+        }
+
+        let hidden = false;
+        if (pw.startsWith("*67")) {
+            hidden = true;
+            pw = pw.substring(3);
+        }
+
+        if (passwords[pw]) {
+            username = hidden ? "Unknown User" : passwords[pw];
+            startChat();
+        } else {
+            alert("Invalid password");
+        }
+    }
+
+    function startChat() {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("chat").style.display = "block";
+
+        client = mqtt.connect("wss://mqtt.flespi.io:443", {
+            username: token,
+            password: "",
+            clean: true
+        });
+
+        client.on("connect", () => {
+            client.subscribe(CHAT_TOPIC);
+            log("<i>Connected as " + username + "</i>");
+        });
+
+        client.on("message", (topic, payload) => {
+            log(payload.toString());
+        });
+    }
+
+    function sendMsg() {
+        if (!client || !client.connected) return;
+
+        const message = document.getElementById("msg").value.trim();
+        if (!message) return;
+
+        const fullMsg = username + ": " + message;
+        client.publish(CHAT_TOPIC, fullMsg);
+
+        document.getElementById("msg").value = "";
+    }
+
+    function log(msg) {
+        const box = document.getElementById("chatBox");
+        box.innerHTML += msg + "<br>";
+        box.scrollTop = box.scrollHeight;
+    }
+</script>
+
+</body>
+</html>
