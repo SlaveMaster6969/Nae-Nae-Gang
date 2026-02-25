@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function setupLogin() {
     document.getElementById("loginBtn").addEventListener("click", checkPassword);
+}
 
 
 
