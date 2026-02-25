@@ -3,564 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <title>Secure MQTT Chat</title>
-
-    <style>
-        :root {
-            --bg: #ffffff;
-            --bg-alt: #f5f5f5;
-            --text: #222;
-            --accent: #007bff;
-            --accent-alt: #28a745;
-            --border: #ddd;
-            --bubble-self: #007bff;
-            --bubble-other: #e5e5ea;
-            --bubble-self-text: #fff;
-            --bubble-other-text: #000;
-        }
-
-        body.dark {
-            --bg: #121212;
-            --bg-alt: #1e1e1e;
-            --text: #f5f5f5;
-            --accent: #4c8dff;
-            --accent-alt: #3acb6a;
-            --border: #333;
-            --bubble-self: #4c8dff;
-            --bubble-other: #2a2a2a;
-            --bubble-self-text: #fff;
-            --bubble-other-text: #f5f5f5;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-
-        /* Fade animations */
-        .fade {
-            animation: fadeIn 0.5s ease forwards;
-            opacity: 0;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Loading screen */
-        #loadingScreen {
-            position: fixed;
-            inset: 0;
-            background: var(--bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            font-weight: 600;
-            z-index: 10;
-        }
-
-        /* Centered panels */
-        .panel {
-            width: 360px;
-            margin: 120px auto;
-            padding: 25px;
-            background: var(--bg-alt);
-            border-radius: 14px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-            transition: background 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        h2 {
-            margin: 0 0 10px 0;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 10px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            font-size: 15px;
-            outline: none;
-            background: #fff;
-            transition: border 0.2s ease, box-shadow 0.2s ease;
-        }
-        body.dark input {
-            background: #181818;
-            color: var(--text);
-        }
-        input:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 2px rgba(0,123,255,0.15);
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            background: var(--accent);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: background 0.2s ease, transform 0.05s ease, box-shadow 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        button:hover {
-            background: #0069d9;
-        }
-        button:active {
-            transform: translateY(1px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-        }
-
-        #aboutMenu {
-            display: none;
-        }
-
-        /* Chat layout */
-        #chat {
-            display: none;
-            height: 100vh;
-            box-sizing: border-box;
-            padding: 0;
-        }
-
-        #chatContainer {
-            display: flex;
-            height: 100%;
-        }
-
-        /* Sidebar */
-        #sidebar {
-            width: 220px;
-            border-right: 1px solid var(--border);
-            background: var(--bg-alt);
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-
-        #sidebar h3 {
-            margin: 0 0 10px 0;
-            font-size: 16px;
-        }
-
-        #userInfo {
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-
-        #userList {
-            flex: 1;
-            overflow-y: auto;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-
-        .userItem {
-            padding: 6px 8px;
-            border-radius: 8px;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .userDot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #28a745;
-        }
-
-        #themeToggle {
-            margin-top: 10px;
-            background: var(--accent-alt);
-        }
-
-        /* Main chat area */
-        #mainChat {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 15px;
-            box-sizing: border-box;
-        }
-
-        #chatHeader {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        #chatBox {
-            flex: 1;
-            background: var(--bg-alt);
-            border-radius: 12px;
-            padding: 12px;
-            overflow-y: auto;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.06);
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .msgRow {
-            display: flex;
-            margin-bottom: 4px;
-        }
-
-        .msgRow.self {
-            justify-content: flex-end;
-        }
-
-        .msgBubble {
-            max-width: 70%;
-            padding: 8px 11px;
-            border-radius: 16px;
-            font-size: 14px;
-            line-height: 1.3;
-            word-wrap: break-word;
-        }
-
-        .msgBubble.self {
-            background: var(--bubble-self);
-            color: var(--bubble-self-text);
-            border-bottom-right-radius: 4px;
-        }
-
-        .msgBubble.other {
-            background: var(--bubble-other);
-            color: var(--bubble-other-text);
-            border-bottom-left-radius: 4px;
-        }
-
-        .msgMeta {
-            font-size: 11px;
-            opacity: 0.7;
-            margin-top: 2px;
-        }
-
-        #typingIndicator {
-            font-size: 12px;
-            opacity: 0.7;
-            margin-top: 4px;
-            min-height: 16px;
-        }
-
-        /* Input row */
-        #inputRow {
-            display: flex;
-            margin-top: 10px;
-        }
-
-        #msg {
-            flex: 1;
-            padding: 11px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-            font-size: 14px;
-            outline: none;
-            background: #fff;
-        }
-        body.dark #msg {
-            background: #181818;
-            color: var(--text);
-        }
-
-        #sendBtn {
-            width: 90px;
-            margin-left: 10px;
-            background: var(--accent-alt);
-        }
-        #sendBtn:hover {
-            background: #218838;
-        }
-
-        @media (max-width: 700px) {
-            #sidebar {
-                display: none;
-            }
-        }
-    </style>
-
+    <link rel="stylesheet" href="style.css">
     <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+    <script defer src="themes.js"></script>
+    <script defer src="emoji.js"></script>
+    <script defer src="admin.js"></script>
+    <script defer src="app.js"></script>
 </head>
 <body>
 
-<!-- Loading Screen -->
 <div id="loadingScreen">Loading…</div>
 
-<!-- Login Panel -->
 <div id="login" class="panel fade" style="display:none;">
     <h2>Enter Password</h2>
-    <p style="font-size:13px;opacity:0.8;margin-top:4px;">
+    <p class="hint">
         Use your access password. Prefix with <b>*67</b> to hide your name, or use <b>*#0*#</b> for info only.
     </p>
     <input id="pw" type="password" placeholder="Password">
-    <button onclick="checkPassword()">Enter</button>
+    <button id="loginBtn">Enter</button>
 </div>
 
-<!-- About Menu -->
 <div id="aboutMenu" class="panel fade">
     <h2>About This Site</h2>
-    <p><b>Version:</b> 1.0.0</p>
+    <p><b>Version:</b> 2.0.0</p>
     <p><b>Creator:</b> Chris &amp; XGFZTeam</p>
     <button onclick="location.reload()">Back</button>
 </div>
 
-<!-- Chat UI -->
 <div id="chat" class="fade">
     <div id="chatContainer">
-        <!-- Sidebar -->
         <div id="sidebar">
-            <h3>Chat Info</h3>
-            <div id="userInfo">
-                <div><b>You:</b> <span id="currentUserLabel"></span></div>
-                <div style="margin-top:4px;font-size:12px;opacity:0.8;">
-                    Broker: flespi<br>
-                    Topic: ttg/chat/main
+            <div id="sidebarTop">
+                <h3>Chat Info</h3>
+                <div id="userInfo">
+                    <div><b>You:</b> <span id="currentUserLabel"></span></div>
+                    <div class="small">
+                        Broker: flespi<br>
+                        Topic: <span id="currentRoomLabel">ttg/chat/main</span>
+                    </div>
                 </div>
+
+                <h3>Rooms</h3>
+                <div id="roomList"></div>
+                <button id="addRoomBtn" class="smallBtn">+ Room</button>
             </div>
 
-            <h3>Online</h3>
-            <div id="userList"></div>
+            <div id="sidebarMiddle">
+                <h3>Online</h3>
+                <div id="userList"></div>
+            </div>
 
-            <button id="themeToggle" onclick="toggleTheme()">Toggle Theme</button>
+            <div id="sidebarBottom">
+                <button id="themeToggle">Toggle Dark/Light</button>
+                <select id="themePreset"></select>
+                <select id="bgPreset"></select>
+                <button id="adminPanelBtn" class="smallBtn">Admin Panel</button>
+            </div>
         </div>
 
-        <!-- Main Chat -->
         <div id="mainChat">
             <div id="chatHeader">
-                <h2 style="margin:0;">MQTT Chatroom</h2>
-                <span style="font-size:13px;opacity:0.8;">Secure Room</span>
+                <div>
+                    <h2>MQTT Chatroom</h2>
+                    <div id="roomSubtitle" class="small">Secure Room</div>
+                </div>
+                <div id="headerRight" class="small">
+                    <span id="lastSeenLabel"></span>
+                </div>
             </div>
 
             <div id="chatBox"></div>
             <div id="typingIndicator"></div>
 
             <div id="inputRow">
+                <button id="emojiBtn">😊</button>
+                <div id="emojiPicker" class="hidden"></div>
+
                 <input id="msg" placeholder="Type a message">
-                <button id="sendBtn" onclick="sendMsg()">Send</button>
+                <button id="sendBtn">Send</button>
             </div>
         </div>
     </div>
 </div>
 
-<script>
-    /* Replace with your real flespi token */
-    const token = "YOUR_FLESPI_TOKEN_HERE";
+<div id="adminPanel" class="panel fade" style="display:none;">
+    <h2>Admin Panel</h2>
+    <p class="small">You can kick, mute, or broadcast announcements.</p>
 
-    let client = null;
-    let username = "";
-    const CHAT_TOPIC = "ttg/chat/main";
-    const TYPING_TOPIC = "ttg/chat/main/typing";
+    <label class="small">Kick user</label>
+    <input id="kickUserInput" placeholder="Username">
+    <button id="kickUserBtn">Kick</button>
 
-    const passwords = {
-        "LandonStone202": "landon",
-        "A1746471BCBF": "Chris",
-        "Randy": "Brandon"
-    };
+    <label class="small">Mute user</label>
+    <input id="muteUserInput" placeholder="Username">
+    <button id="muteUserBtn">Mute</button>
 
-    const onlineUsers = new Set();
-    let typingTimeout = null;
+    <label class="small">Announcement</label>
+    <input id="announceInput" placeholder="Message to everyone">
+    <button id="announceBtn">Broadcast</button>
 
-    /* Simple send sound */
-    const sendSound = new Audio(
-        "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA="
-    );
-
-    /* Loading screen timeout */
-    setTimeout(() => {
-        document.getElementById("loadingScreen").style.display = "none";
-        document.getElementById("login").style.display = "block";
-    }, 900);
-
-    /* ENTER KEY SUPPORT */
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            if (document.getElementById("login").style.display !== "none") {
-                checkPassword();
-            } else if (document.getElementById("chat").style.display !== "none") {
-                sendMsg();
-            }
-        }
-    });
-
-    /* Typing indicator publish */
-    const msgInput = document.getElementById("msg");
-    msgInput.addEventListener("input", () => {
-        if (!client || !client.connected || !username) return;
-        client.publish(TYPING_TOPIC, JSON.stringify({ user: username, typing: true }));
-    });
-
-    function checkPassword() {
-        let pw = document.getElementById("pw").value.trim();
-
-        if (pw === "*#0*#") {
-            document.getElementById("login").style.display = "none";
-            document.getElementById("aboutMenu").style.display = "block";
-            return;
-        }
-
-        let hidden = false;
-        if (pw.startsWith("*67")) {
-            hidden = true;
-            pw = pw.substring(3);
-        }
-
-        if (passwords[pw]) {
-            username = hidden ? "Unknown User" : passwords[pw];
-            startChat();
-        } else {
-            alert("Invalid password");
-        }
-    }
-
-    function startChat() {
-        document.getElementById("login").style.display = "none";
-        document.getElementById("chat").style.display = "block";
-
-        document.getElementById("currentUserLabel").textContent = username;
-
-        client = mqtt.connect("wss://mqtt.flespi.io:443", {
-            username: token,
-            password: "",
-            clean: true
-        });
-
-        client.on("connect", () => {
-            client.subscribe(CHAT_TOPIC);
-            client.subscribe(TYPING_TOPIC);
-            logSystem("Connected as " + username);
-            addUser(username);
-        });
-
-        client.on("message", (topic, payload) => {
-            if (topic === CHAT_TOPIC) {
-                handleChatMessage(payload.toString());
-            } else if (topic === TYPING_TOPIC) {
-                handleTypingMessage(payload.toString());
-            }
-        });
-    }
-
-    function handleChatMessage(text) {
-        const colonIndex = text.indexOf(":");
-        let sender = "Unknown";
-        let message = text;
-
-        if (colonIndex !== -1) {
-            sender = text.substring(0, colonIndex).trim();
-            message = text.substring(colonIndex + 1).trim();
-        }
-
-        addUser(sender);
-        addMessage(sender, message);
-    }
-
-    function handleTypingMessage(json) {
-        try {
-            const data = JSON.parse(json);
-            if (!data.user || data.user === username) return;
-
-            const indicator = document.getElementById("typingIndicator");
-            indicator.textContent = data.user + " is typing…";
-
-            if (typingTimeout) clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {
-                indicator.textContent = "";
-            }, 1500);
-        } catch (e) {
-            // ignore
-        }
-    }
-
-    function sendMsg() {
-        if (!client || !client.connected) return;
-
-        const message = document.getElementById("msg").value.trim();
-        if (!message) return;
-
-        const fullMsg = username + ": " + message;
-        client.publish(CHAT_TOPIC, fullMsg);
-
-        addMessage(username, message);
-        document.getElementById("msg").value = "";
-
-        try { sendSound.currentTime = 0; sendSound.play(); } catch (e) {}
-    }
-
-    function addMessage(sender, message) {
-        const box = document.getElementById("chatBox");
-
-        const row = document.createElement("div");
-        row.className = "msgRow" + (sender === username ? " self" : "");
-
-        const bubble = document.createElement("div");
-        bubble.className = "msgBubble " + (sender === username ? "self" : "other");
-
-        const main = document.createElement("div");
-        main.textContent = message;
-
-        const meta = document.createElement("div");
-        meta.className = "msgMeta";
-        meta.textContent = sender;
-
-        bubble.appendChild(main);
-        bubble.appendChild(meta);
-        row.appendChild(bubble);
-
-        box.appendChild(row);
-        box.scrollTop = box.scrollHeight;
-    }
-
-    function logSystem(text) {
-        const box = document.getElementById("chatBox");
-        const row = document.createElement("div");
-        row.style.fontSize = "12px";
-        row.style.opacity = "0.7";
-        row.style.marginBottom = "4px";
-        row.textContent = text;
-        box.appendChild(row);
-        box.scrollTop = box.scrollHeight;
-    }
-
-    function addUser(name) {
-        if (!name) return;
-        if (onlineUsers.has(name)) return;
-        onlineUsers.add(name);
-
-        const list = document.getElementById("userList");
-        const item = document.createElement("div");
-        item.className = "userItem";
-        item.dataset.user = name;
-
-        const dot = document.createElement("div");
-        dot.className = "userDot";
-
-        const label = document.createElement("span");
-        label.textContent = name;
-
-        item.appendChild(dot);
-        item.appendChild(label);
-        list.appendChild(item);
-    }
-
-    function toggleTheme() {
-        document.body.classList.toggle("dark");
-    }
-</script>
+    <button id="adminCloseBtn" style="margin-top:15px;">Close</button>
+</div>
 
 </body>
 </html>
