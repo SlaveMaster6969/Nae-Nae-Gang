@@ -51,11 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function setupLogin() {
     document.getElementById("loginBtn").addEventListener("click", checkPassword);
 
-    setTimeout(() => {
-        document.getElementById("loadingScreen").style.display = "none";
-        document.getElementById("login").style.display = "block";
-    }, 900);
-}
+
 
 function checkPassword() {
     let pw = document.getElementById("pw").value.trim();
