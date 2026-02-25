@@ -36,6 +36,7 @@ const passwords = {
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("login").style.display = "block";
     setupLogin();
     setupEnterKey();
     setupSendButton();
@@ -43,6 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
     setupRoomList();
     setupFileUpload();
 });
+
+
 
 /* ============================================================
    LOGIN LOGIC
