@@ -12,6 +12,8 @@ let lastSeen = {};
 let typingTimeouts = {};
 let readReceipts = {};
 let editingMessageId = null;
+let clientId = "client_" + Math.random().toString(16).slice(2);
+
 
 /* MQTT topics */
 const BASE = "ttg/chat";
@@ -96,11 +98,13 @@ function startChat() {
 
     document.getElementById("currentUserLabel").textContent = username;
 
-    client = mqtt.connect("wss://mqtt.flespi.io:443", {
-        username: token,
-        password: "",
-        clean: true
-    });
+client = mqtt.connect("wss://mqtt.flespi.io:443", {
+    username: token,
+    password: "",
+    clean: true,
+    clientId: clientId
+});
+
 
     client.on("connect", () => {
         joinRoom("main");
@@ -197,21 +201,20 @@ function joinRoom(room) {
    CHAT MESSAGE HANDLING
    ============================================================ */
 
-function handleChatMessage(topic, text) {
-    const room = topic.split("/").pop();
-    if (room !== currentRoom) return;
+function handleChatMessage(topic, payload) {
+    let data;
 
-    const colon = text.indexOf(":");
-    let sender = "Unknown";
-    let message = text;
-
-    if (colon !== -1) {
-        sender = text.substring(0, colon).trim();
-        message = text.substring(colon + 1).trim();
+    try {
+        data = JSON.parse(payload.toString());
+    } catch {
+        return; // ignore malformed messages
     }
 
-    addUser(sender);
-    addMessage(sender, message);
+    // Ignore your own messages
+    if (data.from === clientId) return;
+
+    addUser(data.user);
+    addMessage(data.user, data.text);
 }
 
 /* ============================================================
@@ -273,8 +276,13 @@ function sendMsg() {
         return;
     }
 
-    const fullMsg = `${username}: ${message}`;
-    client.publish(ROOM_TOPIC(currentRoom), fullMsg);
+const fullMsg = JSON.stringify({
+    from: clientId,
+    user: username,
+    text: message
+});
+
+client.publish(ROOM_TOPIC(currentRoom), fullMsg);
 
     addMessage(username, message);
     input.value = "";
@@ -404,5 +412,6 @@ document.addEventListener("DOMContentLoaded", () => {
             adminPanel.style.display = "block";
         }
     });
+   
 });
 
