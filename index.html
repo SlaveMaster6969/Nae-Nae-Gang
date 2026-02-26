@@ -140,5 +140,43 @@
     </div>
 </div>
 
+<!-- DEBUG CONSOLE -->
+<div id="debugConsole" style="
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    background: rgba(0,0,0,0.85);
+    color: #0aff9d;
+    font-family: monospace;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-top: 1px solid #0aff9d;
+    z-index: 999999;
+"></div>
+
+<script>
+(function() {
+    const logBox = document.getElementById("debugConsole");
+
+    const oldLog = console.log;
+    console.log = function(...args) {
+        oldLog.apply(console, args);
+        logBox.innerHTML += args.join(" ") + "<br>";
+        logBox.scrollTop = logBox.scrollHeight;
+    };
+
+    window.onerror = function(msg, src, line, col, err) {
+        logBox.innerHTML += 
+            "<span style='color:#ff5555'>ERROR:</span> " + msg + 
+            " (" + line + ":" + col + ")<br>";
+        logBox.scrollTop = logBox.scrollHeight;
+    };
+})();
+</script>
+
+
 </body>
 </html>
