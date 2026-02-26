@@ -5,7 +5,7 @@
 let client = null;
 let username = "";
 let currentRoom = "main";
-let rooms = ["main"];
+let rooms = ["main", "Lobby 1", "Lobby 2", "Lobby 3"];
 let onlineUsers = new Set();
 window.mutedUsers = window.mutedUsers || new Set(); // SAFE GLOBAL
 let lastSeen = {};
