@@ -358,7 +358,7 @@ button:active {
 
 #themeDropdown {
     position: absolute;
-    top: 40px;
+    bottom: 40px; /* instead of top */
     left: 0;
     width: 100%;
     background: #111;
@@ -367,6 +367,7 @@ button:active {
     overflow: hidden;
     z-index: 999;
 }
+
 
 #themeDropdown.hidden {
     display: none;
