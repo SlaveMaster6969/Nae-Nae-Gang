@@ -326,3 +326,44 @@ button:active {
         display: none;
     }
 }
+#themeMenuContainer {
+    position: relative;
+    margin-top: 10px;
+}
+
+#themeMenuBtn {
+    width: 100%;
+    padding: 8px;
+    background: #222;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+#themeDropdown {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 6px;
+    overflow: hidden;
+    z-index: 999;
+}
+
+#themeDropdown.hidden {
+    display: none;
+}
+
+.themeOption {
+    padding: 10px;
+    cursor: pointer;
+    color: white;
+    border-bottom: 1px solid #222;
+}
+
+.themeOption:hover {
+    background: #333;
+}
