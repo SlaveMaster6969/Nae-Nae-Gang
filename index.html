@@ -69,7 +69,7 @@
 <!-- About Menu -->
 <div id="aboutMenu" class="panel" style="display:none;">
     <h2>About This Site</h2>
-    <p><b>Version:</b> 2.0.0</p>
+    <p><b>Version:</b> 3.0.6</p>
     <p><b>Creator:</b> Chris & XGFZTeam</p>
     <button onclick="location.reload()">Back</button>
 </div>
@@ -94,7 +94,17 @@
             <h3>Rooms</h3>
             <div id="roomList"></div>
 
-            <button id="themeToggle">Toggle Theme</button>
+            <div id="themeMenuContainer">
+    <button id="themeMenuBtn">Themes</button>
+
+    <div id="themeDropdown" class="hidden">
+        <div class="themeOption" data-theme="amoled">AMOLED</div>
+        <div class="themeOption" data-theme="imessage">iMessage</div>
+        <div class="themeOption" data-theme="discord">Discord</div>
+        <div class="themeOption" data-theme="vaporwave">Vaporwave Smoke</div>
+    </div>
+</div>
+
         </aside>
 
         <!-- Main Chat -->
