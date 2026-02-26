@@ -1,106 +1,105 @@
-/* ===========================
-   ADMIN CONFIG
-   =========================== */
+/* ============================================================
+   ADMIN PANEL LOGIC
+   ============================================================ */
 
-// You can change this to any password you want
-const ADMIN_PASSWORD = "MASTERADMIN123";
-
-// Track muted users
-let mutedUsers = new Set();
-
-/* ===========================
-   ADMIN PANEL OPEN/CLOSE
-   =========================== */
+/* 
+   IMPORTANT:
+   Do NOT redeclare mutedUsers or any global variables here.
+   app.js already creates:
+   window.mutedUsers = window.mutedUsers || new Set();
+*/
 
 document.addEventListener("DOMContentLoaded", () => {
     const adminBtn = document.getElementById("adminBtn");
     const adminPanel = document.getElementById("adminPanel");
 
-    adminBtn.addEventListener("click", () => {
-        const pw = prompt("Enter admin password:");
-        if (pw === ADMIN_PASSWORD) {
-            adminPanel.style.display = "flex";
-        } else {
-            alert("Incorrect admin password");
-        }
-    });
+    if (adminBtn) {
+        adminBtn.addEventListener("click", () => {
+            adminPanel.style.display = "block";
+        });
+    }
+
+    setupAdminControls();
 });
 
-/* ===========================
-   MQTT CONTROL TOPICS
-   =========================== */
+/* ============================================================
+   ADMIN CONTROLS
+   ============================================================ */
 
-const CONTROL_TOPIC = "ttg/chat/control";
-const ANNOUNCE_TOPIC = "ttg/chat/announce";
+function setupAdminControls() {
+    const kickBtn = document.getElementById("kickBtn");
+    const muteBtn = document.getElementById("muteBtn");
+    const announceBtn = document.getElementById("announceBtn");
 
-/* ===========================
-   HANDLE CONTROL MESSAGES
-   =========================== */
-
-function handleAdminControl(json) {
-    try {
-        const data = JSON.parse(json);
-
-        if (data.action === "kick" && data.target === username) {
-            alert("You have been kicked by an admin.");
-            location.reload();
-        }
-
-        if (data.action === "mute" && data.target === username) {
-            mutedUsers.add(username);
-            alert("You have been muted by an admin.");
-        }
-
-    } catch (e) {
-        console.error("Invalid admin control message");
-    }
+    if (kickBtn) kickBtn.addEventListener("click", kickUserPrompt);
+    if (muteBtn) muteBtn.addEventListener("click", muteUserPrompt);
+    if (announceBtn) announceBtn.addEventListener("click", sendAnnouncementPrompt);
 }
 
-/* ===========================
-   SEND ADMIN COMMANDS
-   =========================== */
+/* ============================================================
+   KICK USER
+   ============================================================ */
 
-function sendKickCommand() {
-    const target = prompt("Kick which user?");
-    if (!target) return;
+function kickUserPrompt() {
+    const user = prompt("Enter username to kick:");
+    if (!user) return;
 
     const msg = JSON.stringify({
-        action: "kick",
-        target
+        type: "kick",
+        target: user
     });
 
     client.publish(CONTROL_TOPIC, msg);
 }
 
-function sendMuteCommand() {
-    const target = prompt("Mute which user?");
-    if (!target) return;
+/* ============================================================
+   MUTE USER
+   ============================================================ */
+
+function muteUserPrompt() {
+    const user = prompt("Enter username to mute:");
+    if (!user) return;
 
     const msg = JSON.stringify({
-        action: "mute",
-        target
+        type: "mute",
+        target: user
     });
 
     client.publish(CONTROL_TOPIC, msg);
 }
 
-function sendAnnouncement() {
-    const text = prompt("Announcement text:");
+/* ============================================================
+   ANNOUNCEMENT
+   ============================================================ */
+
+function sendAnnouncementPrompt() {
+    const text = prompt("Enter announcement text:");
     if (!text) return;
 
     client.publish(ANNOUNCE_TOPIC, text);
 }
 
-/* ===========================
-   ADMIN PANEL BUTTONS
-   =========================== */
+/* ============================================================
+   HANDLE ADMIN CONTROL MESSAGES
+   ============================================================ */
 
-document.addEventListener("DOMContentLoaded", () => {
-    const kickBtn = document.getElementById("kickBtn");
-    const muteBtn = document.getElementById("muteBtn");
-    const announceBtn = document.getElementById("announceBtn");
+function handleAdminControl(json) {
+    try {
+        const data = JSON.parse(json);
 
-    kickBtn.addEventListener("click", sendKickCommand);
-    muteBtn.addEventListener("click", sendMuteCommand);
-    announceBtn.addEventListener("click", sendAnnouncement);
-});
+        if (data.type === "kick" && data.target === username) {
+            alert("You were kicked by an admin.");
+            location.reload();
+        }
+
+        if (data.type === "mute") {
+            if (data.target === username) {
+                window.mutedUsers.add(username);
+                alert("You have been muted by an admin.");
+            }
+        }
+
+    } catch (e) {
+        console.log("Admin control parse error:", e);
+    }
+}
