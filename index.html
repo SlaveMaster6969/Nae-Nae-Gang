@@ -54,38 +54,6 @@
 </head>
 <body>
 
-<!-- Debug Console -->
-<div id="debugConsole"></div>
-
-<script>
-    // Debug Console Logic
-    const dbg = document.getElementById("debugConsole");
-
-    function logToConsole(msg) {
-        dbg.textContent += msg + "\n";
-        dbg.scrollTop = dbg.scrollHeight;
-    }
-
-    // Override console.log
-    console.log = (...args) => {
-        logToConsole("[LOG] " + args.join(" "));
-    };
-
-    // Capture errors
-    window.onerror = function(msg, src, line, col, err) {
-        logToConsole("[ERROR] " + msg + " @ " + src + ":" + line);
-    };
-
-    // Toggle console with "~"
-    document.addEventListener("keydown", e => {
-        if (e.key === "`" || e.key === "~") {
-            dbg.classList.toggle("open");
-        }
-    });
-
-    console.log("Debug console initialized.");
-</script>
-
 <!-- Login Panel -->
 <div id="login" class="panel">
     <h2>Enter Password</h2>
