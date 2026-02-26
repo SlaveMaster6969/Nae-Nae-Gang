@@ -430,13 +430,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-    document.querySelectorAll(".themeOption").forEach(opt => {
-        opt.addEventListener("click", () => {
-            applyTheme(opt.dataset.theme);
-            dropdown.classList.add("hidden");
-        });
-    });
-});
 function applyTheme(name) {
     const root = document.documentElement;
 
