@@ -403,6 +403,7 @@ function clearChatBox() {
    ============================================================ */
 
 document.addEventListener("DOMContentLoaded", () => {
+    /* ADMIN ICON */
     const icon = document.getElementById("adminIcon");
     const adminPanel = document.getElementById("adminPanel");
 
@@ -412,9 +413,8 @@ document.addEventListener("DOMContentLoaded", () => {
             adminPanel.style.display = "block";
         }
     });
-   
-});
-document.addEventListener("DOMContentLoaded", () => {
+
+    /* THEME MENU */
     const btn = document.getElementById("themeMenuBtn");
     const dropdown = document.getElementById("themeDropdown");
 
@@ -429,43 +429,90 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
+    document.querySelectorAll(".themeOption").forEach(opt => {
+        opt.addEventListener("click", () => {
+            applyTheme(opt.dataset.theme);
+            dropdown.classList.add("hidden");
+        });
+    });
+});
 function applyTheme(name) {
     const root = document.documentElement;
 
     switch (name) {
 
+        /* ===========================
+           AMOLED THEME
+        =========================== */
         case "amoled":
             root.style.setProperty("--bg", "#000000");
+            root.style.setProperty("--bg-alt", "#000000");
             root.style.setProperty("--text", "#ffffff");
+
             root.style.setProperty("--bubble-self", "#0aff9d");
+            root.style.setProperty("--bubble-self-text", "#000000");
+
             root.style.setProperty("--bubble-other", "#1a1a1a");
+            root.style.setProperty("--bubble-other-text", "#ffffff");
+
             root.style.setProperty("--sidebar", "#000000");
+
             document.body.style.backgroundImage = "";
             break;
 
+        /* ===========================
+           iMESSAGE THEME
+        =========================== */
         case "imessage":
             root.style.setProperty("--bg", "#ffffff");
+            root.style.setProperty("--bg-alt", "#f2f2f7");
             root.style.setProperty("--text", "#000000");
+
             root.style.setProperty("--bubble-self", "#007aff");
+            root.style.setProperty("--bubble-self-text", "#ffffff");
+
             root.style.setProperty("--bubble-other", "#e5e5ea");
+            root.style.setProperty("--bubble-other-text", "#000000");
+
             root.style.setProperty("--sidebar", "#f2f2f7");
+
             document.body.style.backgroundImage = "";
             break;
 
+        /* ===========================
+           DISCORD THEME
+        =========================== */
         case "discord":
             root.style.setProperty("--bg", "#2f3136");
+            root.style.setProperty("--bg-alt", "#202225");
             root.style.setProperty("--text", "#ffffff");
+
             root.style.setProperty("--bubble-self", "#5865f2");
+            root.style.setProperty("--bubble-self-text", "#ffffff");
+
             root.style.setProperty("--bubble-other", "#4f545c");
+            root.style.setProperty("--bubble-other-text", "#ffffff");
+
             root.style.setProperty("--sidebar", "#202225");
+
             document.body.style.backgroundImage = "";
             break;
 
+        /* ===========================
+           VAPORWAVE SMOKE THEME
+        =========================== */
         case "vaporwave":
-            root.style.setProperty("--bg", "#1a1a1f");
+            root.style.setProperty("--bg", "#1a1a1f"); 
+            root.style.setProperty("--bg-alt", "#111118");
             root.style.setProperty("--text", "#ff77ff");
+
             root.style.setProperty("--bubble-self", "#ff77ff");
+            root.style.setProperty("--bubble-self-text", "#000000");
+
             root.style.setProperty("--bubble-other", "#6b6bff");
+            root.style.setProperty("--bubble-other-text", "#ffffff");
+
             root.style.setProperty("--sidebar", "#111118");
 
             // Smoke cloud overlay
@@ -476,4 +523,3 @@ function applyTheme(name) {
             break;
     }
 }
-
