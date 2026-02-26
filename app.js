@@ -63,19 +63,12 @@ function checkPassword() {
         return;
     }
 
-    // Admin Password
-    if (pw === "601") {
-        username = "ADMIN";
+// Admin password should NOT log in
+if (pw === "601") {
+    alert("601 is not a login password.");
+    return;
+}
 
-        document.getElementById("login").style.display = "none";
-        document.getElementById("chat").style.display = "block";
-
-        document.getElementById("adminBtn").style.display = "block";
-        document.getElementById("currentUserLabel").textContent = username;
-
-        startChat();
-        return;
-    }
 
     // Hidden identity
     let hidden = false;
@@ -396,3 +389,20 @@ function setupFileUpload() {
 function clearChatBox() {
     document.getElementById("chatBox").innerHTML = "";
 }
+
+/* ============================================================
+   ADMIN UNLOCK ICON
+   ============================================================ */
+
+document.addEventListener("DOMContentLoaded", () => {
+    const icon = document.getElementById("adminIcon");
+    const adminPanel = document.getElementById("adminPanel");
+
+    icon.addEventListener("click", () => {
+        const pw = prompt("Enter admin password:");
+        if (pw === "601") {
+            adminPanel.style.display = "block";
+        }
+    });
+});
+
