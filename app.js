@@ -7,7 +7,7 @@ let username = "";
 let currentRoom = "main";
 let rooms = ["main"];
 let onlineUsers = new Set();
-let mutedUsers = new Set();
+window.mutedUsers = window.mutedUsers || new Set(); // SAFE GLOBAL
 let lastSeen = {};
 let typingTimeouts = {};
 let readReceipts = {};
@@ -21,10 +21,10 @@ const PRESENCE_TOPIC = `${BASE}/presence`;
 const CONTROL_TOPIC = `${BASE}/control`;
 const ANNOUNCE_TOPIC = `${BASE}/announce`;
 
-/* Flespi token (replace with your real token) */
+/* Flespi token */
 const token = "g977bmKI5b1CdmpybeBxi4QfXcrGVva0oUvZc4mb9lhxNkIL3L2pXhIfhI7NP2J0";
 
-/* Passwords (Option A) */
+/* Passwords */
 const passwords = {
     "LandonStone202": "landon",
     "A1746471BCBF": "Chris",
@@ -56,18 +56,35 @@ function setupLogin() {
 function checkPassword() {
     let pw = document.getElementById("pw").value.trim();
 
+    // About Menu
     if (pw === "*#0*#") {
         document.getElementById("login").style.display = "none";
         document.getElementById("aboutMenu").style.display = "block";
         return;
     }
 
+    // Admin Password
+    if (pw === "601") {
+        username = "ADMIN";
+
+        document.getElementById("login").style.display = "none";
+        document.getElementById("chat").style.display = "block";
+
+        document.getElementById("adminBtn").style.display = "block";
+        document.getElementById("currentUserLabel").textContent = username;
+
+        startChat();
+        return;
+    }
+
+    // Hidden identity
     let hidden = false;
     if (pw.startsWith("*67")) {
         hidden = true;
         pw = pw.substring(3);
     }
 
+    // Normal user login
     if (passwords[pw]) {
         username = hidden ? "Unknown User" : passwords[pw];
         startChat();
@@ -258,7 +275,7 @@ function sendMsg() {
     const message = input.value.trim();
     if (!message) return;
 
-    if (mutedUsers.has(username)) {
+    if (window.mutedUsers.has(username)) {
         alert("You are muted.");
         return;
     }
@@ -369,7 +386,7 @@ function handleAnnouncement(text) {
    ============================================================ */
 
 function setupFileUpload() {
-    // You can add a file input later if you want
+    // Add file upload later if needed
 }
 
 /* ============================================================
