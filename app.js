@@ -432,6 +432,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function applyTheme(name) {
     const root = document.documentElement;
+    const body = document.body;
+
+    // Default: smoke OFF for all themes unless vaporwave
+    body.classList.remove("smoke-on");
 
     switch (name) {
 
@@ -496,7 +500,7 @@ function applyTheme(name) {
            VAPORWAVE SMOKE THEME
         =========================== */
         case "vaporwave":
-            root.style.setProperty("--bg", "#1a1a1f"); 
+            root.style.setProperty("--bg", "#1a1a1f");
             root.style.setProperty("--bg-alt", "#111118");
             root.style.setProperty("--text", "#ff77ff");
 
@@ -508,11 +512,10 @@ function applyTheme(name) {
 
             root.style.setProperty("--sidebar", "#111118");
 
-            // Smoke cloud overlay
-            document.body.style.backgroundImage =
-                "url('https://i.imgur.com/0ZfQY0Z.png')";
-            document.body.style.backgroundSize = "cover";
-            document.body.style.backgroundBlendMode = "screen";
+            // Enable animated smoke overlay
+            body.classList.add("smoke-on");
+
+            document.body.style.backgroundImage = "";
             break;
     }
 }
