@@ -32,7 +32,7 @@ const passwords = {
     "A1746471BCBF": "Chris",
     "Randy": "Brandon",
     "KylerStone202": "Kyler",
-    "allybug14!": "Allie"
+    "allybug14!": "Ally"
 };
 
 /* ============================================================
