@@ -30,7 +30,8 @@ const token = "g977bmKI5b1CdmpybeBxi4QfXcrGVva0oUvZc4mb9lhxNkIL3L2pXhIfhI7NP2J0"
 const passwords = {
     "LandonStone202": "landon",
     "A1746471BCBF": "Chris",
-    "Randy": "Brandon"
+    "Randy": "Brandon",
+    "KylerStone202": "Kyler"
 };
 
 /* ============================================================
